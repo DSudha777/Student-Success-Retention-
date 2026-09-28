@@ -1,0 +1,42 @@
+INSERT INTO dim_degree_type (degree_key, degree_code, degree_description) VALUES
+(1, 0, 'Not Classified'),
+(2, 1, 'Certificate'),
+(3, 2, 'Associate''s Degree'),
+(4, 3, 'Bachelor''s Degree'),
+(5, 4, 'Graduate Degree');
+
+
+-- dim_institution
+INSERT INTO dim_institution (institution_key, institution_id, institution_name, city, state, region, locale_type, control_type, degree_key)
+SELECT
+    ROW_NUMBER() OVER (ORDER BY s.institution_id) AS institution_key,
+    s.institution_id, s.institution_name, s.city, s.state, s.region, s.locale_type, s.control_type, dt.degree_key
+FROM bronze_lakehouse.dbo.silver_scorecard_institutions s
+JOIN dim_degree_type dt ON s.predominant_degree = dt.degree_code;
+
+INSERT INTO fact_institution_outcomes (
+    fact_key, institution_key, year_key, admission_rate, avg_sat_score, undergrad_enrollment,
+    pct_first_gen_students, avg_age_at_entry, pct_white_students, pct_black_students,
+    pct_hispanic_students, avg_annual_cost, pct_pell_grant_recipients, pct_federal_loan_recipients,
+    retention_rate_fulltime, grad_rate_on_time_4yr, grad_rate_150pct_time,
+    median_grad_debt, loan_repayment_rate_3yr, median_earnings_10yr
+)
+SELECT
+    ROW_NUMBER() OVER (ORDER BY d.institution_key) AS fact_key,
+    d.institution_key,
+    1 AS year_key,
+    s.admission_rate, s.avg_sat_score, s.undergrad_enrollment,
+    s.pct_first_gen_students, s.avg_age_at_entry, s.pct_white_students, s.pct_black_students,
+    s.pct_hispanic_students, s.avg_annual_cost, s.pct_pell_grant_recipients, s.pct_federal_loan_recipients,
+    s.retention_rate_fulltime, s.grad_rate_on_time_4yr, s.grad_rate_150pct_time,
+    s.median_grad_debt, s.loan_repayment_rate_3yr, s.median_earnings_10yr
+FROM bronze_lakehouse.dbo.silver_scorecard_institutions s
+JOIN dim_institution d ON s.institution_id = d.institution_id;
+
+INSERT INTO dim_year (year_key, academic_year)
+VALUES (1, '2023-24');
+
+SELECT TOP 10 f.*, d.institution_name, dt.degree_description
+FROM fact_institution_outcomes f
+JOIN dim_institution d ON f.institution_key = d.institution_key
+JOIN dim_degree_type dt ON d.degree_key = dt.degree_key;
