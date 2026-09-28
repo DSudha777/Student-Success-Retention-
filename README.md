@@ -77,9 +77,4 @@ Git integration was attempted but blocked (GitHub required a tenant admin settin
 
 ![Deployment pipeline](Student%20Success%20Deployment%20Pipeline.png)
 
-## What I'd Do Next
 
-- Load multiple years of College Scorecard history so `dim_year` and incremental loads carry real weight
-- Implement SCD Type 2 on institution attributes across years
-- Add the field-of-study file for program-level earnings analysis
-- Add a Git-backed workflow once tenant settings allow it
