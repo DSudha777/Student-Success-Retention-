@@ -32,6 +32,7 @@ Data Model
 •	dim_year: built to support additional years of historical data
 
 Key Design Decisions
+
 •	Privacy-suppressed data is treated as unknown, not zero. College Scorecard suppresses values for small cohorts (coded PS). The pipeline converts these to NULL so averages are not silently distorted.
 
 •	Surrogate keys without IDENTITY. Fabric Warehouse doesn't support IDENTITY columns, so keys are generated with ROW_NUMBER() at load time.
@@ -52,16 +53,23 @@ Real Problems I Solved
 Semantic Model and Reports
 
 Direct Lake semantic model with explicit DAX measures, including:
+
 •	Average retention rate, average 150%-time graduation rate, institution count, average annual cost
+
 •	Debt-to-earnings ratio (median graduate debt divided by median 10-year earnings)
 
 Report pages:
+
 •	Retention overview: average retention by state, broken down by control type
+
 •	Cost & value: cost versus earnings scatter, and institutions ranked by debt-to-earnings ratio
 
 Governance
+
 •	Lineage view showing Bronze → Silver → Gold → semantic model → report
+
 •	Workspace roles defined (Admin / Contributor / Viewer)
+
 •	Semantic model promoted with a description of grain, source, and refresh cadence
 
 Deployment
