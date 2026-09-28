@@ -33,9 +33,13 @@ Data Model
 
 Key Design Decisions
 •	Privacy-suppressed data is treated as unknown, not zero. College Scorecard suppresses values for small cohorts (coded PS). The pipeline converts these to NULL so averages are not silently distorted.
+
 •	Surrogate keys without IDENTITY. Fabric Warehouse doesn't support IDENTITY columns, so keys are generated with ROW_NUMBER() at load time.
+
 •	Constraints are metadata-only. Fabric Warehouse primary and foreign keys must be declared NOT ENFORCED, so referential integrity is handled in the load logic (de-duplication and joins) rather than by the engine.
+
 •	Wide raw data stays Spark-only. The raw table exceeds T-SQL's 1,024-column limit, so Bronze is only ever accessed from Spark, and only the narrow Silver table is exposed to the Warehouse.
+
 •	Direct Lake on SQL was chosen for the semantic model for its DirectQuery fallback behavior while the model was still evolving.
 
 Real Problems I Solved
