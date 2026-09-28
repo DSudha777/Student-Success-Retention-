@@ -88,3 +88,5 @@ CREATE TABLE dim_degree_type (
 
 ALTER TABLE dim_degree_type
 ADD CONSTRAINT PK_dim_degree_type PRIMARY KEY NONCLUSTERED (degree_key) NOT ENFORCED;
+
+
